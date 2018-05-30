@@ -1,4 +1,4 @@
-import unittest, sys
+import unittest
 from psychic_poker import Poker
 
 

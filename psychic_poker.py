@@ -33,19 +33,33 @@ class Poker:
     """
         Poker game to ensure the player gets the best hand
     """
+
     def __init__(self, input_data):
+        """
+
+        :param input_data: list of all the card in hand and deck
+        """
         self.input_data = input_data
         self.hand = self.input_data[:5]
         self.deck = self.input_data[5:]
 
     @classmethod
-    def reinitialize_had_card_rank(cls):
-        hand_cards_rank = {"A": 0, "K": 0, "Q": 0, "J": 0, "T": 0, "9": 0,
-             "8": 0, "7": 0, "6": 0, "5": 0, "4": 0,
-             "3": 0, "2": 0}
-        return hand_cards_rank
+    def reinitialize_hand_card_rank(cls):
+        """
+
+        :return: return hand_cards_value dictionary , counters initialized to 0
+        """
+        hand_cards_value = {"A": 0, "K": 0, "Q": 0, "J": 0, "T": 0, "9": 0,
+                            "8": 0, "7": 0, "6": 0, "5": 0, "4": 0,
+                            "3": 0, "2": 0}
+        return hand_cards_value
 
     def get_poker_hands(self):
+        """
+            This function would yield a possible hand, discarding
+            some cards in the hand and getting some cards from the
+            deck, we need to get the possible combinations
+        """
         for cards_in_hand in range(1, len(self.hand) + 1):
             for replace in combinations(range(len(self.hand)), cards_in_hand):
                 possible_hand = self.hand[:]
@@ -54,6 +68,11 @@ class Poker:
                     yield possible_hand
 
     def check_for_best_hand(self, hand):
+        """
+
+        :param hand: cards in hand , hand is a list of cards
+        :return: return the best possible hand , the lowest value the better one
+        """
         best_possible_hand = 8
         if self.check_for_straight_flush(hand):
             best_possible_hand = 0
@@ -75,12 +94,18 @@ class Poker:
 
     def check_for_straight_flush(self, hand):
         """
-        :return:
+
+        :param hand: cards in hand , hand is a list of cards
+        :return: True: straight-flush, False otherwise
         """
         return self.check_for_flush(hand) and self.check_for_straight(hand)
 
     def check_for_four_of_a_kind(self, hand):
+        """
 
+        :param hand: cards in hand , hand is a list of cards
+        :return: True: four-of-a-kind, False otherwise
+        """
         card_ranks = [card[0] for card in hand]
         for card in card_ranks:
             if card_ranks.count(card) == 4:
@@ -88,10 +113,14 @@ class Poker:
         return False
 
     def check_for_full_house(self, hand):
+        """
 
+        :param hand: cards in hand , hand is a list of cards
+        :return: True: full-house, False otherwise
+        """
         hand_cards_value = {"A": 0, "K": 0, "Q": 0, "J": 0, "T": 0, "9": 0,
-             "8": 0, "7": 0, "6": 0, "5": 0, "4": 0,
-             "3": 0, "2": 0}
+                            "8": 0, "7": 0, "6": 0, "5": 0, "4": 0,
+                            "3": 0, "2": 0}
 
         for element in hand:
             hand_cards_value[element[0]] += 1
@@ -111,7 +140,8 @@ class Poker:
     def check_for_flush(self, hand):
         """
 
-        :return:
+        :param hand: cards in hand , hand is a list of cards
+        :return: True: flush, False otherwise
         """
         selected_suit = hand[0][1]
         for card in hand:
@@ -120,10 +150,12 @@ class Poker:
                 return False
         return True
 
-    def check_for_straight_match_count(self, count):
-        return count == 5
-
     def check_for_straight(self, hand):
+        """
+
+        :param hand: cards in hand , hand is a list of cards
+        :return: True: straigh, False otherwise
+        """
         prev = 0
         card_with_ranks = sorted([CARD_RANK[card[0]] for card in hand])
 
@@ -142,12 +174,12 @@ class Poker:
 
         # for ace as lower card
         counter = 0
-        check_list = [2,3,4,5,14]
-        for rank in card_with_ranks:
-            if rank in check_list:
+        check_list = [2, 3, 4, 5, 14]
+        for index, rank in enumerate(card_with_ranks):
+            if rank == check_list[index]:
                 counter += 1
             else:
-                counter  = 0
+                counter = 0
 
         if counter == 5:
             return True
@@ -155,7 +187,11 @@ class Poker:
         return False
 
     def check_for_three_of_a_kind(self, hand):
+        """
 
+        :param hand: cards in hand , hand is a list of cards
+        :return: True: three-of-a-kind, False: otherwise
+        """
         card_ranks = [card[0] for card in hand]
         for card in card_ranks:
             if card_ranks.count(card) == 3:
@@ -164,11 +200,12 @@ class Poker:
 
     def check_for_two_pairs(self, hand):
         """
-            check for two pairs existence
-        :return:
+
+        :param hand: cards in hand , hand is a list of cards
+        :return: True: two-pairs, False: otherwise
         """
 
-        hand_cards_rank = self.reinitialize_had_card_rank()
+        hand_cards_rank = self.reinitialize_hand_card_rank()
 
         for element in hand:
             hand_cards_rank[element[0]] += 1
@@ -186,17 +223,17 @@ class Poker:
 
     def check_for_one_pair(self, hand):
         """
-            check for one pair existence
-        :return:
+
+        :param hand: cards in hand , hand is a list of cards
+        :return: True: one-pair, False: otherwise
         """
 
-        hand_cards_rank = self.reinitialize_had_card_rank()
+        hand_cards_rank = self.reinitialize_hand_card_rank()
 
         for element in hand:
             hand_cards_rank[element[0]] += 1
 
         tuple_card = ""
-        card_value = 0
         for key, value in hand_cards_rank.items():
             if value == 2:
                 tuple_card = key
@@ -221,5 +258,5 @@ if __name__ == "__main__":
                 if best_of_hands == 0:
                     break
             print("Hand: " + " ".join(p1.hand) +
-                  " Deck: "+ " ".join(p1.deck) +
+                  " Deck: " + " ".join(p1.deck) +
                   " Best hand: " + win_priority_list[best_of_hands])
