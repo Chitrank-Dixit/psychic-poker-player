@@ -36,15 +36,12 @@ CARD_RANK = {"A": 14, "K": 13, "Q": 12, "J": 11, "T": 10, "9": 9,
              "3": 3, "2": 2}
 REVERSE_CARD_RANK_MAPPING = {"14": "A", "13": "K", "12": "Q", "11": "J", "10": "T"}
 
-CARD_VALUE_MAPPING = {}
+# Not needed
+# CARD_VALUE_MAPPING = {}
 
-hand_cards_value = {"A": 0, "K": 0, "Q": 0, "J": 0, "T": 0, "9": 0,
-             "8": 0, "7": 0, "6": 0, "5": 0, "4": 0,
-             "3": 0, "2": 0}
 
-deck_cards_value = {"A": 0, "K": 0, "Q": 0, "J": 0, "T": 0, "9": 0,
-     "8": 0, "7": 0, "6": 0, "5": 0, "4": 0,
-     "3": 0, "2": 0}
+
+
 
 win_priority_list = ["straight-flush", "four-of-a-kind", "full-house", "flush", "straight",
                      "three-of-a-kind", "two-pairs", "one-pair", "highest-card"]
@@ -62,19 +59,19 @@ class Poker:
         self.hand = self.input_data[:5]
         self.deck = self.input_data[5:]
 
+    def reinitialize_had_card_rank(self):
+        hand_cards_rank = {"A": 0, "K": 0, "Q": 0, "J": 0, "T": 0, "9": 0,
+             "8": 0, "7": 0, "6": 0, "5": 0, "4": 0,
+             "3": 0, "2": 0}
+        return hand_cards_rank
+
     def get_poker_hands(self):
         for cards_in_hand in range(1, len(self.hand) + 1):
             for replace in combinations(range(len(self.hand)), cards_in_hand):
                 possible_hand = self.hand[:]
-                for index_card_deck, replacement_index in enumerate(replace):
-                    possible_hand[replacement_index] = self.deck[index_card_deck]
+                for deck_offset, replace_offset in enumerate(replace):
+                    possible_hand[replace_offset] = self.deck[deck_offset]
                     yield possible_hand
-
-    def get_card_values(self, cards):
-        cards_values = set()
-        for element in cards:
-            cards_values.add(element[0])
-        return cards_values
 
     def check_for_best_hand(self, current_hand):
         best_possible_hand = 8
@@ -182,7 +179,6 @@ class Poker:
 
         return False
 
-
     # TODO check for three of a kind
     def check_for_three_of_a_kind(self, hand):
 
@@ -198,16 +194,15 @@ class Poker:
             check for two pairs existence
         :return:
         """
-        hand_cards_value = {"A": 0, "K": 0, "Q": 0, "J": 0, "T": 0, "9": 0,
-             "8": 0, "7": 0, "6": 0, "5": 0, "4": 0,
-             "3": 0, "2": 0}
+
+        hand_cards_rank = self.reinitialize_had_card_rank()
 
         for element in hand:
-            hand_cards_value[element[0]] += 1
+            hand_cards_rank[element[0]] += 1
 
         tuple_card = ""
         card_value = 0
-        for key, value in hand_cards_value.items():
+        for key, value in hand_cards_rank.items():
             if value == 2:
                 card_value += value
             if card_value >= 4:
@@ -223,16 +218,14 @@ class Poker:
         :return:
         """
 
-        hand_cards_value = {"A": 0, "K": 0, "Q": 0, "J": 0, "T": 0, "9": 0,
-             "8": 0, "7": 0, "6": 0, "5": 0, "4": 0,
-             "3": 0, "2": 0}
+        hand_cards_rank = self.reinitialize_had_card_rank()
 
         for element in hand:
-            hand_cards_value[element[0]] += 1
+            hand_cards_rank[element[0]] += 1
 
         tuple_card = ""
         card_value = 0
-        for key, value in hand_cards_value.items():
+        for key, value in hand_cards_rank.items():
             if value == 2:
                 tuple_card = key
         if tuple_card:
@@ -243,11 +236,10 @@ class Poker:
 if __name__ == "__main__":
     input_list = []
     # card value mapping
-    for key in CARD_RANK.keys():
-        for inner_key in SUIT_RANK.keys():
-            CARD_VALUE_MAPPING[key+inner_key] = SUIT_RANK[inner_key] + CARD_RANK[key]
-
-
+    # NOT NEEDED
+    # for key in CARD_RANK.keys():
+    #     for inner_key in SUIT_RANK.keys():
+    #         CARD_VALUE_MAPPING[key+inner_key] = SUIT_RANK[inner_key] + CARD_RANK[key]
 
     with open(sys.argv[1], 'r') as file:
         for counter, line in enumerate(file):
